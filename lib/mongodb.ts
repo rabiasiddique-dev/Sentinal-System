@@ -1,15 +1,6 @@
 import mongoose from 'mongoose';
 import { logDatabaseConnection, logError } from './errors/logger';
 
-// Validate MONGODB_URI environment variable
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
-}
-
 // Connection options as specified in design.md
 const options: mongoose.ConnectOptions = {
   maxPoolSize: 10,
@@ -45,6 +36,14 @@ if (!global.mongoose) {
  * Includes retry logic through mongoose's built-in reconnection
  */
 async function connectDB(): Promise<typeof mongoose> {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error(
+      'Please define the MONGODB_URI environment variable inside your environment settings'
+    );
+  }
+
   // Return existing connection if available
   if (cached.conn) {
     return cached.conn;
